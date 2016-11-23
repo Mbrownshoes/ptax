@@ -10,6 +10,11 @@
   display: none;
 }
 
+text {
+  font: 16px "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+}
+
 </style>
 <svg width="960" height="500"></svg>
 <script src="//d3js.org/d3.v4.min.js"></script>
@@ -37,33 +42,43 @@ var y = d3.scaleLinear()
     .rangeRound([height, 0]);
 
 var z = d3.scaleOrdinal()
-    .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
+    .range(["#a6cee3","#1f78b4"]);
 
 var stack = d3.stack();
 
 var parseTime = d3.timeParse("%Y-%m-%dT%H:%M:%S");
 var formatTime = d3.timeFormat("%Y-%m");
 
-    var data = {
-        resource_id: '099288eb-4a09-43eb-8dc2-72586808f70f' // the resource id
-    };
+var data = {
+    resource_id: '099288eb-4a09-43eb-8dc2-72586808f70f' // the resource id
+};
 
-    $.ajax({
-        url: 'https://catalogue.data.gov.bc.ca/api/action/datastore_search',
-        data: data,
-        dataType: 'json',
-        success: function(data) {
-            // dat = data.result.records;
-            // console.log(data.result.records)
+    var tooltip1 = d3.select("body")
+        .append("div")
+        .style("position", "absolute")
+        .style("z-index", "10")
+        .style("visibility", "hidden")
+        .style("color", "#222")
+        .style("padding", "8px")
+        .style("background-color", "lightgrey")
+        .style("border-radius", "6px")
+        .style("font", "14 px sans-serif")
+        .text("tooltip1");
 
-            for (j=0; j < 5; j++){
-                columns = ['tot_mkt_trans','no_foreign']
-                type(data.result.records[j],j,columns)
-            }
-            
-            
+$.ajax({
+    url: 'https://catalogue.data.gov.bc.ca/api/action/datastore_search',
+    data: data,
+    dataType: 'json',
+    success: function(data) {
+        // dat = data.result.records;
+        // console.log(data.result.records)
 
-
+        for (j=0; j < 5; j++){
+            columns = ['tot_mkt_trans','no_foreign']
+            type(data.result.records[j],j,columns)
+        }
+        
+        
 
 // d3.csv("provincial-monthly.csv", type, function(error, data) {
     data = data.result.records;
@@ -83,6 +98,7 @@ var formatTime = d3.timeFormat("%Y-%m");
         return d.total;
     })]).nice();
     console.log(columns.slice(0))
+
     z.domain(columns.slice(1));
 
     g.selectAll(".serie")
@@ -106,7 +122,27 @@ var formatTime = d3.timeFormat("%Y-%m");
         .attr("height", function(d) {
             return y(d[0]) - y(d[1]);
         })
-        .attr("width", x.bandwidth());
+        .attr("width", x.bandwidth())
+        .on("mouseover", function(d) {
+            console.log(d.data)
+            d3.select(this)
+                // .style("fill", "orange");
+
+
+            tooltip1.text(d[1]-d[0])
+            tooltip1.style("visibility", "visible");
+
+        })
+        .on("mousemove", function() {
+            return tooltip1.style("left", (d3.event.pageX ) + "px")
+                .style("top", (d3.event.pageY - 50) + "px");
+        })
+        .on("mouseout", function() {
+            d3.select(this)
+                // .style("fill", "steelblue");
+
+            return tooltip1.style("visibility", "hidden");
+        });
 
     g.append("g")
         .attr("class", "axis axis--x")
@@ -115,14 +151,14 @@ var formatTime = d3.timeFormat("%Y-%m");
 
     g.append("g")
         .attr("class", "axis axis--y")
-        .call(d3.axisLeft(y).ticks(10, "s"))
+        .call(d3.axisLeft(y).ticks(6, "s"))
         .append("text")
         .attr("x", 2)
         .attr("y", y(y.ticks(10).pop()))
         .attr("dy", "0.35em")
         .attr("text-anchor", "start")
         .attr("fill", "#000")
-        .text("# of transactions");
+        .text("Number of transactions");
 
     var legend = g.selectAll(".legend")
         .data(columns.slice(0).reverse())
@@ -131,7 +167,7 @@ var formatTime = d3.timeFormat("%Y-%m");
         .attr("transform", function(d, i) {
             return "translate(0," + i * 20 + ")";
         })
-        .style("font", "10px sans-serif");
+        .style("font", "16px sans-serif");
 
     legend.append("rect")
         .attr("x", width - 18)
@@ -151,11 +187,11 @@ var formatTime = d3.timeFormat("%Y-%m");
     });
 
 function type(d, i, columns) { //i=row #, columns headers
-    console.log(i)
+    // console.log(i)
 
     for (i = 0, t = 0; i < columns.length; ++i) t += d[columns[i]] = +d[columns[i]];
     d.total = t;
-    console.log(d)
+    // console.log(d)
     return d;
 }
 
