@@ -41,6 +41,8 @@ var z = d3.scaleOrdinal()
 
 var stack = d3.stack();
 
+var parseTime = d3.timeParse("%Y-%m-%dT%H:%M:%S");
+var formatTime = d3.timeFormat("%Y-%m");
 
     var data = {
         resource_id: '099288eb-4a09-43eb-8dc2-72586808f70f' // the resource id
@@ -63,10 +65,11 @@ var stack = d3.stack();
 
 
 
-
 // d3.csv("provincial-monthly.csv", type, function(error, data) {
     data = data.result.records;
-    console.log(data)
+    data.forEach(function(d){
+        d.trans_period = formatTime(parseTime(d.trans_period))
+    })
     data.sort(function(a, b) {
         return b.trans_period - a.trans_period;
     });
@@ -119,10 +122,10 @@ var stack = d3.stack();
         .attr("dy", "0.35em")
         .attr("text-anchor", "start")
         .attr("fill", "#000")
-        .text("Population");
+        .text("# of transactions");
 
     var legend = g.selectAll(".legend")
-        .data(data.columns.slice(1).reverse())
+        .data(columns.slice(0).reverse())
         .enter().append("g")
         .attr("class", "legend")
         .attr("transform", function(d, i) {
