@@ -16,7 +16,7 @@ text {
 }
 
 </style>
-<svg width="960" height="500"></svg>
+<svg width="760" height="500"></svg>
 <script src="//d3js.org/d3.v4.min.js"></script>
 <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
 <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
@@ -42,7 +42,7 @@ var y = d3.scaleLinear()
     .rangeRound([height, 0]);
 
 var z = d3.scaleOrdinal()
-    .range(["#a6cee3","#1f78b4"]);
+    .range(["#98abc5", "#8a89a6", "#7b6888"]);
 
 var stack = d3.stack();
 

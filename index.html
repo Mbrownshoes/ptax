@@ -16,7 +16,7 @@ text {
 }
 
 </style>
-<svg width="960" height="500"></svg>
+<svg width="760" height="500"></svg>
 <script src="//d3js.org/d3.v4.min.js"></script>
 <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
 <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
@@ -42,16 +42,13 @@ var y = d3.scaleLinear()
     .rangeRound([height, 0]);
 
 var z = d3.scaleOrdinal()
-    .range(["#a6cee3","#1f78b4"]);
+    .range(["#98abc5", "#8a89a6", "#7b6888"]);
 
 var stack = d3.stack();
 
 var parseTime = d3.timeParse("%Y-%m-%dT%H:%M:%S");
 var formatTime = d3.timeFormat("%Y-%m");
 
-var data = {
-    resource_id: '099288eb-4a09-43eb-8dc2-72586808f70f' // the resource id
-};
 
     var tooltip1 = d3.select("body")
         .append("div")
@@ -60,10 +57,15 @@ var data = {
         .style("visibility", "hidden")
         .style("color", "#222")
         .style("padding", "8px")
-        .style("background-color", "lightgrey")
+        .style("background-color", "white")
         .style("border-radius", "6px")
         .style("font", "14 px sans-serif")
         .text("tooltip1");
+
+var data = {
+    resource_id: '' // the resource id
+};
+
 
 $.ajax({
     url: 'https://catalogue.data.gov.bc.ca/api/action/datastore_search',
@@ -129,7 +131,7 @@ $.ajax({
                 // .style("fill", "orange");
 
 
-            tooltip1.text(d[1]-d[0])
+            tooltip1.text(format(d[1]-d[0]))
             tooltip1.style("visibility", "visible");
 
         })
@@ -194,5 +196,7 @@ function type(d, i, columns) { //i=row #, columns headers
     // console.log(d)
     return d;
 }
+
+var format = d3.format(",") ;
 
 </script>
